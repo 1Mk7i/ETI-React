@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Button from './components/atoms/Button/Button'
+import Input from './components/atoms/Input/Input'
+import Card from './components/molecules/Card/Card'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const handleLogin = () => {
+    alert('Бебра')
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <Card>
+        <h2 style={{ marginBottom: '20px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+          Ласкаво просимо
+        </h2>
+        
+        <div style={{ marginBottom: '15px' }}>
+          <Input type="email" placeholder="Email" label="Ваша пошта" />
+        </div>
+        
+        <div style={{ marginBottom: '20px' }}>
+          <Input type="password" placeholder="Пароль" label="Пароль" />
+        </div>
+        
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+          <Button onClick={handleLogin} variant="primary">Увійти</Button>
+          <Button variant="secondary">Реєстрація</Button>
+        </div>
+      </Card>
+    </div>
   )
 }
 
