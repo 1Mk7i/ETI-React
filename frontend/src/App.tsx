@@ -1,34 +1,49 @@
-import Button from './components/atoms/Button/Button'
-import Input from './components/atoms/Input/Input'
-import Card from './components/molecules/Card/Card'
+import React from 'react';
+import { students, type Student } from './data';
 
-function App() {
-  const handleLogin = () => {
-    alert('Бебра')
-  }
+const App: React.FC = () => {
+  const sortedStudents = [...students].sort((a, b) => b.grade - a.grade);
+
+  const topActiveStudents = students.filter((s: Student) => s.isActive && s.grade > 60);
+
+  const activeStudents = students.filter(s => s.isActive);
+  const averageGrade = activeStudents.length > 0 
+    ? activeStudents.reduce((acc, curr) => acc + curr.grade, 0) / activeStudents.length 
+    : 0;
 
   return (
-    <div>
-      <Card>
-        <h2 style={{ marginBottom: '20px', textAlign: 'center', fontFamily: 'sans-serif' }}>
-          Ласкаво просимо
-        </h2>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <Input type="email" placeholder="Email" label="Ваша пошта" />
-        </div>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <Input type="password" placeholder="Пароль" label="Пароль" />
-        </div>
-        
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-          <Button onClick={handleLogin} variant="primary">Увійти</Button>
-          <Button variant="secondary">Реєстрація</Button>
-        </div>
-      </Card>
-    </div>
-  )
-}
+    <div style={{ padding: '20px' }}>
+      <h1>Трансформація масивів</h1>
 
-export default App
+      <section>
+        <h2>Всі студенти</h2>
+        <ul>
+          {sortedStudents.map((student) => (
+            <li 
+              key={student.id} 
+              style={{ 
+                color: student.isActive ? 'black' : 'gray',
+                textDecoration: student.isActive ? 'none' : 'line-through'
+              }}
+            >
+              {student.name} — {student.grade} балів
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2>Топ-активні</h2>
+        <ul>
+          {topActiveStudents.map(student => (
+            <li key={student.id}>{student.name} ({student.grade})</li>
+          ))}
+        </ul>
+      </section>
+
+      <p><strong>Середній бал:</strong> {averageGrade.toFixed(1)}</p>
+    </div>
+  );
+};
+
+export default App;
