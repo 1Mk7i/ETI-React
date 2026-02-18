@@ -1,9 +1,11 @@
 import Post from './components/molecules/Post/Post';
 import { postsData } from './data';
+import Header from './components/Header';
 
 function App() {
   return (
     <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 0' }}>
+      <Header />
       <h1 style={{ textAlign: 'center', fontFamily: 'sans-serif', marginBottom: '30px', color: "black" }}>
         Стрічка новин
       </h1>
