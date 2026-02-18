@@ -33,3 +33,18 @@ export const postsData: PostItem[] = [
     likes: 2
   }
 ];
+
+export interface Student {
+  id: number;
+  name: string;
+  grade: number;
+  isActive: boolean;
+}
+
+export const students: Student[] = [
+  { id: 1, name: 'Олександр', grade: 85, isActive: true },
+  { id: 2, name: 'Марія', grade: 55, isActive: true },
+  { id: 3, name: 'Іван', grade: 92, isActive: false },
+  { id: 4, name: 'Олена', grade: 78, isActive: true },
+  { id: 5, name: 'Дмитро', grade: 45, isActive: false },
+];
