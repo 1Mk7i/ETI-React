@@ -48,3 +48,16 @@ export const students: Student[] = [
   { id: 4, name: 'Олена', grade: 78, isActive: true },
   { id: 5, name: 'Дмитро', grade: 45, isActive: false },
 ];
+
+export interface Post {
+  id: number;
+  author: string;
+  content: string;
+  category: 'News' | 'Updates' | 'Work'; // Обмежимо категорії для безпеки
+}
+
+export const postsData2: Post[] = [
+  { id: 1, author: 'Admin', content: 'Вітаємо у новому курсі React!', category: 'News' },
+  { id: 2, author: 'Petro', content: 'Оновив Vite до версії 8', category: 'Updates' },
+  { id: 3, author: 'Olena', content: 'Шукаю розробника на проект', category: 'Work' },
+];

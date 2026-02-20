@@ -1,0 +1,41 @@
+/* src/components/molecules/SearchBar/SearchBar.module.css */
+
+.searchWrapper {
+  margin: 20px 0;
+  width: 100%;
+  max-width: 500px; /* Обмежуємо ширину для кращого вигляду */
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease; /* Плавний перехід кольору та тіні */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Ефект при натисканні (Focus) */
+.searchInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  transform: translateY(-1px); /* Легкий ефект підняття */
+}
+
+/* Стилізація плейсхолдера */
+.searchInput::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Адаптивність для мобілок */
+@media (max-width: 480px) {
+  .searchInput {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,22 @@
+.appContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.active {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
