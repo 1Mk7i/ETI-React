@@ -5,36 +5,47 @@
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
 }
+
 .avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%; 
-  object-fit: cover;   
-  border: 1px solid #ddd;
-  margin-right: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
 }
+
 .info {
   display: flex;
   flex-direction: column;
-  color: var(--text-fill-color);
+  gap: 0.25rem;
 }
+
 .author {
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
 }
+
 .date {
-  font-size: 0.8em;
-  color: #666;
+  font-size: 0.85rem;
+  color: var(--text-light);
 }
+
 .content {
-  margin-bottom: 16px;
-  line-height: 1.5;
-  color: var(--text-fill-color);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-size: 1rem;
 }
+
 .actions {
   display: flex;
-  gap: 10px;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
+  gap: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+  margin-top: 1rem;
 }
