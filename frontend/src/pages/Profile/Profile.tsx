@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { students as initialStudents, type Student } from '../../data';
 import AddStudentForm from '../../components/molecules/AddStudentForm/AddStudentForm';
-import styles from './Profile.module.css';
+
+const profileStyles: { [key: string]: React.CSSProperties } = {
+  empty: {
+    textAlign: 'center',
+    color: '#999',
+    padding: '20px',
+    fontStyle: 'italic'
+  }
+};
 
 const Profile = () => {
   const [currentStudents, setCurrentStudents] = useState<Student[]>(initialStudents);
@@ -53,7 +61,7 @@ const Profile = () => {
           ))}
         </ul>
       ) : (
-        <p className={styles.empty}>За вашим запитом нікого не знайдено.</p>
+        <p style={profileStyles.empty}>За вашим запитом нікого не знайдено.</p>
       )}
 
       <hr style={{ opacity: 0.2, margin: '30px 0' }} />

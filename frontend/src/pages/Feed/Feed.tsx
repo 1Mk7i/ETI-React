@@ -3,7 +3,20 @@ import { Link } from 'react-router-dom';
 import SearchBar from '../../components/molecules/SearchBar/SearchBar';
 import PostCard from '../../components/molecules/Post/Post';
 import { postsData2 } from '../../data';
-import styles from './Feed.module.css';
+
+const feedStyles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px'
+  },
+  empty: {
+    textAlign: 'center',
+    color: '#999',
+    padding: '20px',
+    fontStyle: 'italic'
+  }
+};
 
 const Feed = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,7 +30,7 @@ const Feed = () => {
     <section>
       <h2>Стрічка новин</h2>
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      <div className={styles.feed} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={feedStyles.container}>
         {filteredPosts.length > 0 ? (
           filteredPosts.map(post => (
             <div key={post.id} style={{ position: 'relative' }}>
@@ -43,7 +56,7 @@ const Feed = () => {
             </div>
           ))
         ) : (
-          <p className={styles.empty}>Новин не знайдено.</p>
+          <p style={feedStyles.empty}>Новин не знайдено.</p>
         )}
       </div>
     </section>

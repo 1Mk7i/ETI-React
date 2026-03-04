@@ -1,5 +1,55 @@
 import React, { useState } from 'react';
-import styles from './AddStudentForm.module.css';
+
+const formStyles: { [key: string]: React.CSSProperties } = {
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem'
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem'
+  },
+  label: {
+    fontWeight: 600,
+    fontSize: '0.95rem',
+    color: '#1a1a1a'
+  },
+  input: {
+    padding: '0.75rem 1rem',
+    border: '1px solid #e0e0e0',
+    borderRadius: '6px',
+    fontSize: '1rem',
+    color: '#1a1a1a',
+    backgroundColor: '#ffffff',
+    transition: 'all 0.2s ease',
+    outline: 'none'
+  },
+  error: {
+    color: '#dc3545',
+    fontSize: '0.85rem',
+    fontWeight: 500
+  },
+  submitBtn: {
+    padding: '0.75rem 2rem',
+    backgroundColor: '#0066cc',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '1rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    alignSelf: 'flex-start',
+    marginTop: '0.5rem'
+  },
+  submitBtnDisabled: {
+    backgroundColor: '#ccc',
+    cursor: 'not-allowed',
+    opacity: 0.7
+  }
+};
 
 interface AddStudentFormProps {
   onAddStudent: (student: { id: number; name: string; grade: number; isActive: boolean }) => void;
@@ -69,32 +119,38 @@ const AddStudentForm: React.FC<AddStudentFormProps> = ({ onAddStudent }) => {
   const isInvalid = !formData.name || !formData.score || Object.keys(validate(formData)).length > 0;
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <div className={styles.inputGroup}>
-        <label>ПІБ студента:</label>
+    <form onSubmit={handleSubmit} style={formStyles.form}>
+      <div style={formStyles.inputGroup}>
+        <label style={formStyles.label}>ПІБ студента:</label>
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
           placeholder="Напр. Іван Іванов"
+          style={formStyles.input}
         />
-        {errors.name && <span className={styles.error}>{errors.name}</span>}
+        {errors.name && <span style={formStyles.error}>{errors.name}</span>}
       </div>
 
-      <div className={styles.inputGroup}>
-        <label>Бал:</label>
+      <div style={formStyles.inputGroup}>
+        <label style={formStyles.label}>Бал:</label>
         <input
           type="number"
           name="score"
           value={formData.score}
           onChange={handleChange}
           placeholder="0-100"
+          style={formStyles.input}
         />
-        {errors.score && <span className={styles.error}>{errors.score}</span>}
+        {errors.score && <span style={formStyles.error}>{errors.score}</span>}
       </div>
 
-      <button type="submit" disabled={isInvalid} className={styles.submitBtn}>
+      <button
+        type="submit"
+        disabled={isInvalid}
+        style={isInvalid ? {...formStyles.submitBtn, ...formStyles.submitBtnDisabled} : formStyles.submitBtn}
+      >
         Додати студента
       </button>
     </form>

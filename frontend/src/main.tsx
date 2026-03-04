@@ -4,9 +4,11 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx'
 
+const basename = import.meta.env.DEV ? '/' : '/ETI-React/';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </StrictMode>,
