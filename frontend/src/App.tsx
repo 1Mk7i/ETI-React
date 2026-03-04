@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { 
-  students, 
-  postsData2, // для фільтрації та Лаби №3
+  students as initialStudents, // перейменовуємо для початкового стану
+  postsData2, 
   type Student, 
   type Post 
 } from './data';
 import SearchBar from './components/molecules/SearchBar/SearchBar';
 import PostCard from './components/molecules/Post/Post';
 import styles from './App.module.css';
+import AddStudentForm from './components/molecules/AddStudentForm/AddStudentForm';
 
-// Типізація для табів
 type Tab = 'students' | 'news' | 'stats' | 'about';
 
 const App: React.FC = () => {
@@ -18,22 +18,26 @@ const App: React.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // ПРАКТИЧНА №4: Стан для списку студентів
+  const [currentStudents, setCurrentStudents] = useState<Student[]>(initialStudents);
 
   // --- ЛОГІКА ОБЧИСЛЕНЬ ---
   
-  // 1. Студенти
-  const activeStudents = students.filter(s => s.isActive);
-  const successfulStudents = students.filter(s => (s.grade ?? 0) >= 60);
-  
-  // Вибір масиву для рендерингу (Тернарний оператор - Практична №3)
-  const studentsToDisplay = filterActive ? successfulStudents : students;
+  // Обробник додавання нового студента
+  const handleAddStudent = (newStudent: Student) => {
+    setCurrentStudents([newStudent, ...currentStudents]); // Додаємо на початок списку
+  };
 
-  // 2. Статистика
+  const activeStudents = currentStudents.filter(s => s.isActive);
+  const successfulStudents = currentStudents.filter(s => (s.grade ?? 0) >= 60);
+  
+  const studentsToDisplay = filterActive ? successfulStudents : currentStudents;
+
   const averageGrade = activeStudents.length > 0 
     ? activeStudents.reduce((acc, curr) => acc + (curr.grade ?? 0), 0) / activeStudents.length 
     : 0;
 
-  // 3. Фільтрація постів (Лабораторна №3)
   const filteredPosts = postsData2.filter(post => 
     post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.author.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,25 +47,22 @@ const App: React.FC = () => {
     <div className={styles.appContainer} style={{ padding: '20px' }}>
       <h1>Мій React Проєкт</h1>
 
-      {/* 2. Оператор && (Просте умовне відображення) */}
+      {/* Оператор && (Довідка) */}
       <div style={{ marginBottom: '20px' }}>
         <button onClick={() => setShowHelp(!showHelp)}>
           {showHelp ? "Приховати інструкцію" : "Показати інструкцію"}
         </button>
         {showHelp && (
           <div style={{ 
-            padding: '15px', 
-            background: '#eef2f7', 
-            marginTop: '10px', 
-            borderRadius: '8px',
-            borderLeft: '4px solid #007bff' 
+            padding: '15px', background: '#eef2f7', marginTop: '10px', 
+            borderRadius: '8px', borderLeft: '4px solid #007bff', color: '#333'
           }}>
-            <p><strong>Довідка:</strong> Використовуйте вкладки для перемикання розділів. У вкладці "Студенти" доступний фільтр за успішністю.</p>
+            <p><strong>Довідка:</strong> Використовуйте вкладки для перемикання розділів. Тепер ви можете додавати нових студентів через форму.</p>
           </div>
         )}
       </div>
 
-      {/* 4. Навігація (Інтерфейс із табами) */}
+      {/* Навігація (Таби) */}
       <nav className={styles.filters} style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
         {(['students', 'news', 'stats', 'about'] as Tab[]).map((tab) => (
           <button
@@ -69,9 +70,7 @@ const App: React.FC = () => {
             onClick={() => setActiveTab(tab)}
             className={activeTab === tab ? styles.active : ''}
             style={{
-              padding: '8px 16px',
-              cursor: 'pointer',
-              borderRadius: '20px',
+              padding: '8px 16px', cursor: 'pointer', borderRadius: '20px',
               border: '1px solid #ccc',
               backgroundColor: activeTab === tab ? '#007bff' : '#fff',
               color: activeTab === tab ? '#fff' : '#000'
@@ -87,13 +86,19 @@ const App: React.FC = () => {
 
       <hr style={{ opacity: 0.2 }} />
 
-      {/* Контент табів (Умовне відображення) */}
       <div className={styles.content} style={{ marginTop: '20px' }}>
         
-        {/* ТАБ: СТУДЕНТИ (Практична №3) */}
+        {/* ТАБ: СТУДЕНТИ (Інтеграція Форми) */}
         {activeTab === 'students' && (
           <section>
-            <h2>Список студентів</h2>
+            <h2>Управління студентами</h2>
+            
+            {/* ФОРМА ПОПЕРЕДУ СПИСКУ */}
+            <div style={{ marginBottom: '30px', padding: '20px', border: '1px solid #eee', borderRadius: '10px' }}>
+               <h3>Додати нового студента</h3>
+               <AddStudentForm onAddStudent={handleAddStudent} />
+            </div>
+
             <button 
               onClick={() => setFilterActive(!filterActive)} 
               style={{ marginBottom: '15px', padding: '5px 10px' }}
@@ -101,17 +106,14 @@ const App: React.FC = () => {
               {filterActive ? "Показати всіх" : "Тільки успішні (>=60)"}
             </button>
             
-            {/* Порожній стан (Empty State) */}
             {studentsToDisplay.length > 0 ? (
               <ul style={{ lineHeight: '2' }}>
                 {studentsToDisplay.map(s => (
                   <li key={s.id}>
                     <strong>{s.name}</strong> — 
-                    {/* Оператор нульового злиття (??) - Захист від помилок */}
                     <span style={{ 
                       color: (s.grade ?? 0) >= 60 ? '#28a745' : '#dc3545', 
-                      marginLeft: '5px',
-                      fontWeight: 'bold'
+                      marginLeft: '5px', fontWeight: 'bold'
                     }}>
                       {s.grade ?? "Оцінка відсутня"} 
                       {s.grade !== undefined && s.grade !== null && (
@@ -127,7 +129,7 @@ const App: React.FC = () => {
           </section>
         )}
 
-        {/* ТАБ: НОВИНИ (Лабораторна №3) */}
+        {/* ТАБ: НОВИНИ */}
         {activeTab === 'news' && (
           <section>
             <h2>Стрічка новин</h2>
@@ -138,24 +140,24 @@ const App: React.FC = () => {
                   <PostCard 
                     key={post.id} 
                     {...post}
-                    // Додаємо пропси, яких немає в Post, але є в PostItem/PostCard
                     date="Сьогодні" 
                     avatar="https://via.placeholder.com/150" 
+                    likes={0}
                   />
                 ))
               ) : (
-                <p className={styles.empty}>Новин за запитом "{searchTerm}" не знайдено.</p>
+                <p className={styles.empty}>Новин не знайдено.</p>
               )}
             </div>
           </section>
         )}
 
-        {/* ТАБ: СТАТИСТИКА */}
+        {/* ТАБ: СТАТИСТИКА (тепер рахує динамічно) */}
         {activeTab === 'stats' && (
           <section>
             <h2>Аналітика</h2>
             <div style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-              <p>Загальна кількість студентів: <strong>{students.length}</strong></p>
+              <p>Загальна кількість студентів: <strong>{currentStudents.length}</strong></p>
               <p>Активних студентів: <strong>{activeStudents.length}</strong></p>
               <p>Середній бал (активні): <strong style={{ color: '#007bff' }}>{averageGrade.toFixed(1)}</strong></p>
             </div>
@@ -166,8 +168,7 @@ const App: React.FC = () => {
         {activeTab === 'about' && (
           <section>
             <h2>Про автора</h2>
-            <p>Цей додаток розроблено в рамках вивчення React. Тут поєднано роботу зі списками, станом, фільтрацією та умовним рендерингом.</p>
-            <p>Група: <strong>Твоя Група</strong></p>
+            <p>Проєкт виконав студент групи [Твоя група]. Додано валідацію форм та динамічне оновлення стану.</p>
           </section>
         )}
       </div>
