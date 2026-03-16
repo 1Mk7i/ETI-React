@@ -5,7 +5,6 @@ import PostCard from '../../components/molecules/Post/Post';
 import ProductCard from '../../components/Product/ProductCard';
 import { postsData2 } from '../../data';
 
-// Дані для товарів (можна потім винести в окремий файл data.ts)
 const MOCK_PRODUCTS = [
   {
     id: 101,
@@ -32,7 +31,7 @@ const feedStyles: { [key: string]: React.CSSProperties } = {
     borderBottom: '2px solid #f0f0f0',
     paddingBottom: '0.5rem'
   },
-  postsContainer: {
+  container: {
     display: 'flex',
     flexDirection: 'column',
     gap: '15px'
@@ -63,7 +62,7 @@ const Feed: FC = () => {
     <section>
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
-      {/* Секція товарів (Практичне заняття №5) */}
+      {/* Секція товарів (Практичне заняття №5) - показуємо тільки якщо немає пошуку */}
       {!searchTerm && (
         <>
           <h2 style={feedStyles.sectionTitle}>Рекомендовані товари</h2>
@@ -77,7 +76,7 @@ const Feed: FC = () => {
 
       {/* Секція постів */}
       <h2 style={feedStyles.sectionTitle}>Стрічка новин</h2>
-      <div style={feedStyles.postsContainer}>
+      <div style={feedStyles.container}>
         {filteredPosts.length > 0 ? (
           filteredPosts.map(post => (
             <div key={post.id} style={{ 
