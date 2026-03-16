@@ -3,7 +3,15 @@ import { Link } from 'react-router-dom';
 import SearchBar from '../../components/molecules/SearchBar/SearchBar';
 import PostCard from '../../components/molecules/Post/Post';
 import ProductCard from '../../components/Product/ProductCard';
-import { postsData2 } from '../../data';
+import { useFetch } from '../../hooks/useFetch'; // Наш новий хук
+
+// Тип для даних з JSONPlaceholder
+interface ApiPost {
+  id: number;
+  userId: number;
+  title: string;
+  body: string;
+}
 
 const MOCK_PRODUCTS = [
   {
@@ -42,27 +50,31 @@ const feedStyles: { [key: string]: React.CSSProperties } = {
     gap: '20px',
     marginBottom: '3rem'
   },
-  empty: {
+  statusMessage: {
     textAlign: 'center',
-    color: '#999',
-    padding: '20px',
-    fontStyle: 'italic'
+    padding: '40px',
+    fontSize: '1.2rem',
+    color: '#666'
   }
 };
 
 const Feed: FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredPosts = postsData2.filter(post => 
-    post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.author.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Використовуємо API замість статичних даних
+  const { data: posts, isLoading, error } = useFetch<ApiPost[]>("https://jsonplaceholder.typicode.com/posts");
+
+  // Фільтрація отриманих даних
+  const filteredPosts = posts ? posts.filter(post => 
+    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.body.toLowerCase().includes(searchTerm.toLowerCase())
+  ).slice(0, 10) : []; // Беремо лише перші 10 постів
 
   return (
     <section>
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
-      {/* Секція товарів (Практичне заняття №5) - показуємо тільки якщо немає пошуку */}
+      {/* Секція товарів (залишається як була в Практ №5) */}
       {!searchTerm && (
         <>
           <h2 style={feedStyles.sectionTitle}>Рекомендовані товари</h2>
@@ -74,41 +86,51 @@ const Feed: FC = () => {
         </>
       )}
 
-      {/* Секція постів */}
-      <h2 style={feedStyles.sectionTitle}>Стрічка новин</h2>
-      <div style={feedStyles.container}>
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map(post => (
-            <div key={post.id} style={{ 
-              position: 'relative', 
-              padding: '15px', 
-              border: '1px solid #eee', 
-              borderRadius: '8px' 
-            }}>
-              <PostCard 
-                {...post}
-                date="Сьогодні" 
-                avatar="https://via.placeholder.com/150" 
-                likes={0}
-              />
-              <Link 
-                to={`/feed/${post.id}`}
-                style={{
-                  display: 'inline-block',
-                  marginTop: '10px',
-                  color: '#0066cc',
-                  textDecoration: 'none',
-                  fontWeight: 'bold'
-                }}
-              >
-                Читати далі →
-              </Link>
-            </div>
-          ))
-        ) : (
-          <p style={feedStyles.empty}>Новин не знайдено.</p>
-        )}
-      </div>
+      <h2 style={feedStyles.sectionTitle}>Стрічка новин (Live API)</h2>
+
+      {/* Реалізація тріади станів */}
+      {isLoading && <div style={feedStyles.statusMessage}>⏳ Завантаження публікацій...</div>}
+      
+      {error && <div style={{...feedStyles.statusMessage, color: 'red'}}>❌ Помилка: {error}</div>}
+
+      {!isLoading && !error && (
+        <div style={feedStyles.container}>
+          {filteredPosts.length > 0 ? (
+            filteredPosts.map(post => (
+              <div key={post.id} style={{ 
+                position: 'relative', 
+                padding: '15px', 
+                border: '1px solid #eee', 
+                borderRadius: '8px' 
+              }}>
+                <PostCard 
+                  id={post.id}
+                  category="News"         
+                  author={`Користувач #${post.userId}`}
+                  content={post.body}
+                  date="Сьогодні" 
+                  avatar={`https://i.pravatar.cc/150?u=${post.userId}`} 
+                  likes={Math.floor(Math.random() * 50)} 
+                />
+                <Link 
+                  to={`/feed/${post.id}`}
+                  style={{
+                    display: 'inline-block',
+                    marginTop: '10px',
+                    color: '#0066cc',
+                    textDecoration: 'none',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Читати далі →
+                </Link>
+              </div>
+            ))
+          ) : (
+            <p style={{ textAlign: 'center', color: '#999' }}>Новин не знайдено.</p>
+          )}
+        </div>
+      )}
     </section>
   );
 };
