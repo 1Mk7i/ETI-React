@@ -8,6 +8,7 @@ interface PostProps {
   content: string;
   date: string;
   avatar: string;
+  likes: number;
 }
 
 const Post: React.FC<PostProps> = ({ author, content, date, avatar }) => {
