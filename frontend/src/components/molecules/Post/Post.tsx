@@ -52,12 +52,14 @@ const postStyles: { [key: string]: React.CSSProperties } = {
   }
 };
 
-interface PostProps {
+export interface PostProps {
+  id: number;
   author: string;
   content: string;
-  date: string;
-  avatar: string;
-  likes: number; // Робимо обов'язковим, бо ми передаємо його з Feed
+  category: "News" | "Updates" | "Work";
+  date?: string;    // Тепер необов'язково
+  avatar?: string;  // Тепер необов'язково
+  likes?: number;   // Тепер необов'язково
 }
 
 const Post: React.FC<PostProps> = ({ author, content, date, avatar, likes }) => {
