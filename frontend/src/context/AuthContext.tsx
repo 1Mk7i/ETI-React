@@ -5,18 +5,17 @@ interface User {
   id?: number;
   email: string;
   name?: string;
-  username?: string;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  isLoading: boolean; // Додаємо для UX (блокування кнопки входу)
-  login: (email: string) => Promise<void>; // Тепер повертає Promise
+  isLoading: boolean;
+  login: (email: string) => Promise<void>;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,26 +25,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string) => {
     setIsLoading(true);
     try {
-      // Крок 4: Імітація мережевої затримки
+      // Симуляція затримки для дебагу та UX
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Запит до JSONPlaceholder для отримання фіктивних даних профілю
-      const response = await fetch("https://jsonplaceholder.typicode.com/users/1");
-      if (!response.ok) throw new Error("Помилка при отриманні профілю");
       
+      const response = await fetch("https://jsonplaceholder.typicode.com/users/1");
       const userData = await response.json();
 
       setIsAuthenticated(true);
-      // Об'єднуємо введену пошту з даними з API
-      setUser({
-        id: userData.id,
-        email: email,
-        name: userData.name,
-        username: userData.username
-      });
+      setUser({ email, name: userData.name, id: userData.id });
     } catch (error) {
-      console.error("Помилка авторизації:", error);
-      alert("Не вдалося увійти. Спробуйте ще раз.");
+      console.error("Auth error", error);
     } finally {
       setIsLoading(false);
     }
@@ -65,6 +54,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };

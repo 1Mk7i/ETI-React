@@ -31,7 +31,9 @@ export const useFetch = <T>(url: string) => {
 
     fetchData();
 
-    return () => abortController.abort();
+    return () => {
+      abortController.abort();
+    };
   }, [url]);
 
   return { data, isLoading, error };

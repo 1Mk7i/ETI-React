@@ -1,36 +1,46 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import Button from "../../components/atoms/Button/Button";
-import Input from "../../components/atoms/Input/Input"; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      login({ email });
-      navigate("/profile", { replace: true });
+    if (email) {
+      await login(email);
+      navigate('/profile');
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '2rem auto' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <h2>Вхід в систему</h2>
-        <Input 
+    <div style={{ maxWidth: '300px', margin: '100px auto', textAlign: 'center' }}>
+      <h2>Вхід до системи</h2>
+      <form onSubmit={handleLogin}>
+        <input 
           type="email" 
-          placeholder="vash@email.com" 
-          label="Ваш Email"
-          value={email}
+          placeholder="Введіть email" 
+          value={email} 
           onChange={(e) => setEmail(e.target.value)}
+          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+          required
         />
-        <Button variant="primary" className="w-full">
-          Увійти
-        </Button>
+        <button 
+          type="submit" 
+          disabled={isLoading}
+          style={{ 
+            width: '100%', 
+            padding: '10px', 
+            backgroundColor: isLoading ? '#ccc' : '#007bff',
+            color: 'white',
+            border: 'none',
+            cursor: isLoading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {isLoading ? 'Завантаження...' : 'Увійти'}
+        </button>
       </form>
     </div>
   );
