@@ -4,6 +4,7 @@ import SearchBar from '../../components/molecules/SearchBar/SearchBar';
 import PostCard from '../../components/molecules/Post/Post';
 import ProductCard from '../../components/Product/ProductCard';
 import { useFetch } from '../../hooks/useFetch';
+import useWindowSize from '../../hooks/useWindowSize';
 
 interface ApiPost {
   id: number;
@@ -26,9 +27,25 @@ const Feed: FC = () => {
     post.body.toLowerCase().includes(searchTerm.toLowerCase())
   ).slice(0, 10) : [];
 
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+
   return (
     <div style={{ padding: '20px' }}>
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      {!searchTerm && (
+        <>
+          <h2>Рекомендовані товари</h2>
+          <div style={{ 
+            display: 'grid', 
+            // Динамічна зміна колонок
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(250px, 1fr))', 
+            gap: '20px' 
+          }}>
+            {MOCK_PRODUCTS.map(product => <ProductCard key={product.id} {...product} />)}
+          </div>
+        </>
+      )}
 
       {!searchTerm && (
         <>
