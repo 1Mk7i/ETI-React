@@ -1,10 +1,10 @@
-import { type FC } from 'react';
+import { type FC, useState, useMemo, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import SearchBar from '../../components/molecules/SearchBar/SearchBar';
 import PostCard from '../../components/molecules/Post/Post';
 import ProductCard from '../../components/Product/ProductCard';
 import { useFetch } from '../../hooks/useFetch';
-import useWindowSize from '../../hooks/useWindowSize'; // Імпорт хука ПР8
+import useWindowSize from '../../hooks/useWindowSize';
 
 interface ApiPost {
   id: number;
@@ -18,24 +18,42 @@ const MOCK_PRODUCTS = [
   { id: 102, title: "Ігрова миша", description: "16000 DPI", price: 1800, rating: 4.5, image: "https://via.placeholder.com/150" }
 ];
 
+// Штучна "важка" функція
+const calculateHeavyAnalytics = (num: number): number => {
+  console.log("%c [Process] Важкі обчислення...", "color: #ff9800");
+  let result = 0;
+  for (let i = 0; i < 500000000; i++) { result += num; } // Імітація затримки
+  return result;
+};
+
 const Feed: FC = () => {
-  // Хук для адаптивності (ПР №8)
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
-  // Хук для синхронізації пошуку з URL (ПР №7)
   const [searchParams, setSearchParams] = useSearchParams();
   const searchTerm = searchParams.get('query') || '';
+  
+  // Стейт для "важкої" аналітики
+  const [analyticsBase, setAnalyticsBase] = useState(1);
+
+  // ОПТИМІЗАЦІЯ 1: useMemo для важких розрахунків
+  // Тепер при введенні тексту в SearchBar ця функція НЕ буде запускатися
+  const heavyResult = useMemo(() => {
+    return calculateHeavyAnalytics(analyticsBase);
+  }, [analyticsBase]);
 
   const { data: posts, isLoading, error } = useFetch<ApiPost[]>("https://jsonplaceholder.typicode.com/posts");
 
   const handleSearchChange = (value: string) => {
-    if (value) {
-      setSearchParams({ query: value });
-    } else {
-      setSearchParams({}); // Очищаємо URL, якщо пошук порожній
-    }
+    if (value) setSearchParams({ query: value });
+    else setSearchParams({});
   };
+
+  // ОПТИМІЗАЦІЯ 2: useCallback для стабілізації посилання на функцію
+  // Це потрібно, щоб React.memo у PostCard спрацював коректно
+  const handleLike = useCallback((id: number) => {
+    console.log(`Пост #${id} лайкнуто!`);
+  }, []); // Залежностей немає, посилання буде вічним
 
   const filteredPosts = posts ? posts.filter(post => 
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,42 +62,39 @@ const Feed: FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
+      <div style={{ background: '#f9f9f9', padding: '15px', borderRadius: '10px', marginBottom: '20px', border: '1px solid #ddd' }}>
+        <h4>Аналітичний звіт: {heavyResult}</h4>
+        <button onClick={() => setAnalyticsBase(p => p + 1)}>Оновити дані звіту</button>
+        <p><small>(Пошук працює швидко, бо звіт не перераховується дарма)</small></p>
+      </div>
+
       <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
 
       {!searchTerm && (
-        <>
-          <h2>Рекомендовані товари</h2>
-          <div style={{ 
-            display: 'grid', 
-            // Адаптивна кількість колонок (ПР №8)
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(250px, 1fr))', 
-            gap: '20px' 
-          }}>
-            {MOCK_PRODUCTS.map(product => <ProductCard key={product.id} {...product} />)}
-          </div>
-        </>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', marginTop: '20px' }}>
+          {MOCK_PRODUCTS.map(product => <ProductCard key={product.id} {...product} />)}
+        </div>
       )}
 
-      <h2>Стрічка новин (API)</h2>
+      <h2>Стрічка новин</h2>
 
       {isLoading && <p>⏳ Завантаження...</p>}
       {error && <p style={{ color: 'red' }}>Помилка: {error}</p>}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
         {filteredPosts.map(post => (
-          <div key={post.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
+          <div key={post.id} style={{ border: '1px solid #eee', padding: '10px', borderRadius: '8px' }}>
             <PostCard 
               id={post.id}
               category="News"
               author={`User #${post.userId}`}
               content={post.body}
-              date="Сьогодні" 
               avatar={`https://i.pravatar.cc/150?u=${post.userId}`} 
-              likes={Math.floor(Math.random() * 50)} 
+              likes={Math.floor(Math.random() * 100)}
+              onLike={handleLike}
             />
-            {/* Посилання на динамічний маршрут (ПР №7) */}
-            <Link to={`/feed/${post.id}`} style={{ fontWeight: 'bold', color: '#0066cc', textDecoration: 'none' }}>
-              Читати далі →
+            <Link to={`/feed/${post.id}`} style={{ display: 'block', marginTop: '10px', color: '#0066cc', textDecoration: 'none' }}>
+              Читати повністю →
             </Link>
           </div>
         ))}
