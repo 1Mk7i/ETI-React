@@ -8,26 +8,29 @@ import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
 import NotFound from './pages/NotFound/NotFound';
 import ProtectedRoute from './components/hoc/ProtectedRoute';
-import useOnlineStatus from './hooks/useOnlineStatus';
+import useOnlineStatus from './hooks/useOnlineStatus'; // Імпорт хука ПР8
 
 const App: React.FC = () => {
   const isOnline = useOnlineStatus();
 
   return (
     <>
+      {/* Індикатор мережі (ПР №8) */}
       {!isOnline && (
         <div style={{
           backgroundColor: '#ff4d4f',
           color: 'white',
           textAlign: 'center',
-          padding: '8px',
+          padding: '10px',
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '100%',
-          zIndex: 9999
+          right: 0,
+          zIndex: 9999,
+          fontWeight: 'bold',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
         }}>
-          ⚠️ Ви зараз офлайн. Перевірте з'єднання з мережею.
+          ⚠️ Відсутнє підключення до Інтернету. Деякі функції можуть бути недоступні.
         </div>
       )}
 
@@ -36,6 +39,7 @@ const App: React.FC = () => {
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="feed" element={<Feed />} />
+          {/* Динамічний параметр :postId (ПР №7) */}
           <Route path="feed/:postId" element={<PostPage />} />
           
           <Route element={<ProtectedRoute />}>
@@ -45,7 +49,7 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </> // <--- І закриваємо його тут
+    </>
   );
 };
 

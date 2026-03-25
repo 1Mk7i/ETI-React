@@ -1,10 +1,10 @@
-import { useState, type FC } from 'react';
-import { Link } from 'react-router-dom';
+import { type FC } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import SearchBar from '../../components/molecules/SearchBar/SearchBar';
 import PostCard from '../../components/molecules/Post/Post';
 import ProductCard from '../../components/Product/ProductCard';
 import { useFetch } from '../../hooks/useFetch';
-import useWindowSize from '../../hooks/useWindowSize';
+import useWindowSize from '../../hooks/useWindowSize'; // Імпорт хука ПР8
 
 interface ApiPost {
   id: number;
@@ -19,38 +19,42 @@ const MOCK_PRODUCTS = [
 ];
 
 const Feed: FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  // Хук для адаптивності (ПР №8)
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+
+  // Хук для синхронізації пошуку з URL (ПР №7)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchTerm = searchParams.get('query') || '';
+
   const { data: posts, isLoading, error } = useFetch<ApiPost[]>("https://jsonplaceholder.typicode.com/posts");
+
+  const handleSearchChange = (value: string) => {
+    if (value) {
+      setSearchParams({ query: value });
+    } else {
+      setSearchParams({}); // Очищаємо URL, якщо пошук порожній
+    }
+  };
 
   const filteredPosts = posts ? posts.filter(post => 
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.body.toLowerCase().includes(searchTerm.toLowerCase())
   ).slice(0, 10) : [];
 
-  const { width } = useWindowSize();
-  const isMobile = width < 768;
-
   return (
     <div style={{ padding: '20px' }}>
-      <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <SearchBar searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+
       {!searchTerm && (
         <>
           <h2>Рекомендовані товари</h2>
           <div style={{ 
             display: 'grid', 
-            // Динамічна зміна колонок
+            // Адаптивна кількість колонок (ПР №8)
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(250px, 1fr))', 
             gap: '20px' 
           }}>
-            {MOCK_PRODUCTS.map(product => <ProductCard key={product.id} {...product} />)}
-          </div>
-        </>
-      )}
-
-      {!searchTerm && (
-        <>
-          <h2>Рекомендовані товари</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
             {MOCK_PRODUCTS.map(product => <ProductCard key={product.id} {...product} />)}
           </div>
         </>
@@ -73,6 +77,7 @@ const Feed: FC = () => {
               avatar={`https://i.pravatar.cc/150?u=${post.userId}`} 
               likes={Math.floor(Math.random() * 50)} 
             />
+            {/* Посилання на динамічний маршрут (ПР №7) */}
             <Link to={`/feed/${post.id}`} style={{ fontWeight: 'bold', color: '#0066cc', textDecoration: 'none' }}>
               Читати далі →
             </Link>
